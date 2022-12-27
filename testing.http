@@ -1,0 +1,25 @@
+POST 127.0.0.1:8000/create-announcement
+Content-Type: application/json
+
+{
+  "name": "house21",
+  "description": "content 1",
+  "price": "41523",
+  "id_photo": "ww54eew5yr32e'ls23454"
+}
+
+####
+
+GET 127.0.0.1:8000/get-announcements/?count=10&page=1
+Content-Type: application/json
+
+####
+
+GET 127.0.0.1:8000/get-announcement/?id=12
+Content-Type: application/json
+
+####
+
+GET 127.0.0.1:8000/get-announcements/?count=3
+Content-Type: application/json
+
