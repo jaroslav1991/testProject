@@ -9,11 +9,7 @@ import (
 )
 
 func main() {
-
-	dbCong, err := config.GetDbConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	dbCong := config.GetDbConfig()
 
 	db, err := repository.NewPostgresDB(dbCong)
 	if err != nil {
@@ -22,12 +18,16 @@ func main() {
 
 	storage := handlers.NewStorage(db)
 
+	if err := handlers.CreateTable(storage); err != nil {
+		log.Fatal(err)
+	}
+
 	http.HandleFunc("/create-announcement", handlers.CreateHandler(storage))
 	http.HandleFunc("/get-announcements/", handlers.GetAllAnnouncement(storage))
 	http.HandleFunc("/get-announcement/", handlers.GetAnnouncementById(storage))
 
 	if err := http.ListenAndServe(":8000", nil); err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 
 }

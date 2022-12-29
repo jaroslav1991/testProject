@@ -13,6 +13,4 @@ COPY . .
 
 RUN go build -o service ./cmd/server
 
-EXPOSE 8080
-
 ENTRYPOINT "/go/src/app/service"

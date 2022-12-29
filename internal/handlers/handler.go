@@ -81,12 +81,14 @@ func GetAllAnnouncement(storage *Storage) http.HandlerFunc {
 
 			count, err := validators.ValidateCount(r.Form.Get("count"), w)
 			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
 			page, err := validators.ValidatePage(r.Form.Get("page"), w)
 			if err != nil {
-				//w.WriteHeader(http.StatusBadRequest)
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("page must be positive or zero"))
 				return
 			}
 

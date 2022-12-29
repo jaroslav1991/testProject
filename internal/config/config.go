@@ -1,16 +1,12 @@
 package config
 
-import "testProject/pkg/repository"
+import "os"
 
-var dbConfig = repository.Config{
-	Host:     "localhost",
-	Port:     "5432",
-	Username: "postgres",
-	Password: "1234",
-	DBName:   "test_task",
-	SSLMode:  "disable",
-}
+var localdbConfig = "postgresql://postgres:1234@localhost:15432/postgres?application_name=postgres&sslmode=disable"
 
-func GetDbConfig() (repository.Config, error) {
-	return dbConfig, nil
+func GetDbConfig() string {
+	if s := os.Getenv("PG_DSN"); s != "" {
+		return s
+	}
+	return localdbConfig
 }

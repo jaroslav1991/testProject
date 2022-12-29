@@ -2,11 +2,12 @@ POST 127.0.0.1:8000/create-announcement
 Content-Type: application/json
 
 {
-  "name": "house21",
+  "name": "house25",
   "description": "content 1",
-  "price": "41523",
+  "price": 41090,
   "id_photo": "ww54eew5yr32e'ls23454"
 }
+
 
 ####
 
