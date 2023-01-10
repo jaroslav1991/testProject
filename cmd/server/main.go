@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testProject/internal/config"
 	"testProject/internal/handlers"
+	"testProject/internal/storage"
 	"testProject/pkg/repository"
 )
 
@@ -16,15 +17,15 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	storage := handlers.NewStorage(db)
+	storageDB := storage.NewStorage(db)
 
-	if err := handlers.CreateTable(storage); err != nil {
+	if err := storage.CreateTable(storageDB); err != nil {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/create-announcement", handlers.CreateHandler(storage))
-	http.HandleFunc("/get-announcements/", handlers.GetAllAnnouncement(storage))
-	http.HandleFunc("/get-announcement/", handlers.GetAnnouncementById(storage))
+	http.HandleFunc("/create-announcement", handlers.CreateHandler(storageDB))
+	http.HandleFunc("/get-announcements/", handlers.GetAllAnnouncement(storageDB))
+	http.HandleFunc("/get-announcement/", handlers.GetAnnouncementById(storageDB))
 
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatal(err)

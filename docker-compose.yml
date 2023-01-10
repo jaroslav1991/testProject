@@ -12,7 +12,7 @@ services:
       POSTGRES_DB: test_task
 
   app:
-    container_name: "banana"
+    container_name: "application"
     depends_on:
       - postgres
     image: "app-image"

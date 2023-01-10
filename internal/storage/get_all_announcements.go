@@ -1,4 +1,4 @@
-package handlers
+package storage
 
 const (
 	getAllQuery = `select name, id_photo, price from announcements order by price asc, created_at asc limit $1 offset $2`
@@ -15,7 +15,7 @@ func (s *Storage) GetAllAnnouncements(count, page int) ([]*AnnouncementsResponse
 
 	offset := page * count
 
-	rows, err := s.db.Query(getAllQuery, count, offset)
+	rows, err := s.Db.Query(getAllQuery, count, offset)
 	if err != nil {
 		return nil, err
 	}

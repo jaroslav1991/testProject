@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testProject/internal/config"
+	"testProject/internal/storage"
 	"testProject/internal/validators"
 	"testProject/pkg/repository"
 	"testing"
@@ -18,7 +19,7 @@ func TestCreateHandler(t *testing.T) {
 		t.Error(err)
 	}
 
-	strg := NewStorage(db)
+	strg := storage.NewStorage(db)
 
 	req := httptest.NewRequest("POST", "/create-announcement", bytes.NewBuffer([]byte(
 		`{"name": "test name3", "description": "test description", "price": 1000, "id_photo": "qwerty123"}`)))
@@ -38,7 +39,7 @@ func TestGetAllAnnouncement(t *testing.T) {
 	req := httptest.NewRequest("GET", "/get-announcements/?count=10&page=0", nil)
 	res := httptest.NewRecorder()
 
-	GetAllAnnouncement(&Storage{db: db})(res, req)
+	GetAllAnnouncement(&storage.Storage{Db: db})(res, req)
 
 }
 
@@ -53,7 +54,7 @@ func TestGetAnnouncementById(t *testing.T) {
 	req := httptest.NewRequest("GET", "/get-announcement/?id=12", nil)
 	res := httptest.NewRecorder()
 
-	GetAnnouncementById(&Storage{db: db})(res, req)
+	GetAnnouncementById(&storage.Storage{Db: db})(res, req)
 
 }
 

@@ -1,6 +1,8 @@
-package handlers
+package storage
 
-import "log"
+import (
+	"log"
+)
 
 const (
 	getByIdQuery = `select name, price, id_photo from announcements where id=$1`
@@ -19,7 +21,7 @@ type OptionalAnnouncementById struct {
 
 func (s *Storage) GetAnnouncementsById(id int) (*AnnouncementById, error) {
 	var announcement AnnouncementById
-	rows, err := s.db.Query(getByIdQuery, id)
+	rows, err := s.Db.Query(getByIdQuery, id)
 	if err != nil {
 		return nil, err
 	}

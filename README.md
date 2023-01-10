@@ -1,18 +1,18 @@
+# Service for posting announcements
+
 ## How to run
 
 ### Start docker-compose
 
-    docker-compose up -d
+    docker-compose up 
 
 ### Start client
+Adding random values for testing handlers
     
     cd cmd/client
     go run main.go
 
-### Start server
 
-    cd cmd/server
-    go run main.go
 
 
 

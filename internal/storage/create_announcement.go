@@ -1,6 +1,8 @@
-package handlers
+package storage
 
-import "testProject/internal/validators"
+import (
+	"testProject/internal/validators"
+)
 
 const (
 	createQuery = `insert into announcements (name, description, price, id_photo, created_at) values ($1, $2, $3, $4, $5) returning id`
@@ -14,7 +16,7 @@ func (s *Storage) CreateAnnouncement(announcement *Announcement) (*Announcement,
 	}
 	price = announcement.Price
 
-	rows, err := s.db.Query(createQuery, announcement.Name, announcement.Description, price, announcement.IdPhoto, announcement.TimeNow())
+	rows, err := s.Db.Query(createQuery, announcement.Name, announcement.Description, price, announcement.IdPhoto, announcement.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +33,7 @@ func (s *Storage) CreateAnnouncement(announcement *Announcement) (*Announcement,
 		Description: announcement.Description,
 		Price:       price,
 		IdPhoto:     announcement.IdPhoto,
-		CreatedAt:   announcement.TimeNow(),
+		CreatedAt:   announcement.CreatedAt,
 	}
 	return res, nil
 }

@@ -1,4 +1,4 @@
-package handlers
+package storage
 
 const (
 	createTableQuery = `create table if not exists announcements (
@@ -12,6 +12,6 @@ const (
 )
 
 func CreateTable(s *Storage) error {
-	_, err := s.db.Exec(createTableQuery)
+	_, err := s.Db.Exec(createTableQuery)
 	return err
 }

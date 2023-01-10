@@ -1,40 +1,18 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
+	"testProject/internal/storage"
 	"testProject/internal/validators"
-	"time"
 )
 
-type Announcement struct {
-	Id          int64     `json:"id" db:"id"`
-	Name        string    `json:"name" db:"name"`
-	Description string    `json:"description" db:"description"`
-	Price       int64     `json:"price" db:"price"`
-	IdPhoto     string    `json:"id_photo" db:"id_photo"`
-	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-}
-
-func (a *Announcement) TimeNow() time.Time {
-	return time.Now()
-}
-
-type Storage struct {
-	db *sql.DB
-}
-
-func NewStorage(db *sql.DB) *Storage {
-	return &Storage{db: db}
-}
-
-func CreateHandler(storage *Storage) http.HandlerFunc {
+func CreateHandler(storageDB *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var announcement Announcement
+		var announcement storage.Announcement
 
 		if r.Method == http.MethodPost {
 
@@ -53,7 +31,7 @@ func CreateHandler(storage *Storage) http.HandlerFunc {
 				return
 			}
 
-			res, err := storage.CreateAnnouncement(&announcement)
+			res, err := storageDB.CreateAnnouncement(&announcement)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				log.Println("can't create announcement", err)
@@ -70,7 +48,7 @@ func CreateHandler(storage *Storage) http.HandlerFunc {
 	}
 }
 
-func GetAllAnnouncement(storage *Storage) http.HandlerFunc {
+func GetAllAnnouncement(storageDB *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 
@@ -92,7 +70,7 @@ func GetAllAnnouncement(storage *Storage) http.HandlerFunc {
 				return
 			}
 
-			res, err := storage.GetAllAnnouncements(count, page)
+			res, err := storageDB.GetAllAnnouncements(count, page)
 			if err != nil {
 				log.Println(err)
 				return
@@ -109,7 +87,7 @@ func GetAllAnnouncement(storage *Storage) http.HandlerFunc {
 	}
 }
 
-func GetAnnouncementById(storage *Storage) http.HandlerFunc {
+func GetAnnouncementById(storageDB *storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		if r.Method == http.MethodGet {
@@ -124,7 +102,7 @@ func GetAnnouncementById(storage *Storage) http.HandlerFunc {
 				return
 			}
 
-			res, err := storage.GetAnnouncementsById(id)
+			res, err := storageDB.GetAnnouncementsById(id)
 			if err != nil {
 				log.Println(err)
 				return
