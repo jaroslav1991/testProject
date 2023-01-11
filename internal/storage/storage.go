@@ -2,10 +2,15 @@ package storage
 
 import "database/sql"
 
-type Storage struct {
-	Db *sql.DB
+type Db interface {
+	Exec(query string, args ...any) (sql.Result, error)
+	Query(query string, args ...any) (*sql.Rows, error)
 }
 
-func NewStorage(db *sql.DB) *Storage {
+type Storage struct {
+	Db Db
+}
+
+func NewStorage(db Db) *Storage {
 	return &Storage{Db: db}
 }

@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testProject/internal/config"
@@ -9,6 +12,7 @@ import (
 	"testProject/internal/validators"
 	"testProject/pkg/repository"
 	"testing"
+	"time"
 )
 
 func TestCreateHandler(t *testing.T) {
@@ -25,7 +29,26 @@ func TestCreateHandler(t *testing.T) {
 		`{"name": "test name3", "description": "test description", "price": 1000, "id_photo": "qwerty123"}`)))
 	res := httptest.NewRecorder()
 
-	CreateHandler(strg)(res, req)
+	handler := CreateHandler(strg)
+	handler(res, req)
+
+	var newObj storage.Announcement
+
+	if err := json.Unmarshal(res.Body.Bytes(), &newObj); err != nil {
+		t.Error(err)
+	}
+
+	now := time.Now()
+	newObj.Id = 0
+	newObj.CreatedAt = now
+
+	assert.Equal(t, storage.Announcement{
+		Name:        "test name3",
+		Description: "test description",
+		Price:       1000,
+		IdPhoto:     "qwerty123",
+		CreatedAt:   now,
+	}, newObj)
 }
 
 func TestGetAllAnnouncement(t *testing.T) {
@@ -36,11 +59,63 @@ func TestGetAllAnnouncement(t *testing.T) {
 		t.Error(err)
 	}
 
+	tx, err := db.BeginTx(context.Background(), nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	defer tx.Rollback()
+
+	if _, err := tx.Exec("delete from announcements"); err != nil {
+		t.Error(err)
+	}
+
+	strg := storage.NewStorage(tx)
+
+	now := time.Now()
+
+	_, err = strg.CreateAnnouncement(&storage.Announcement{
+		Id:          1,
+		Name:        "name1",
+		Description: "description1",
+		Price:       150,
+		IdPhoto:     "1",
+		CreatedAt:   now,
+	})
+
+	_, err = strg.CreateAnnouncement(&storage.Announcement{
+		Id:          2,
+		Name:        "name2",
+		Description: "description2",
+		Price:       120,
+		IdPhoto:     "2",
+		CreatedAt:   now,
+	})
+
 	req := httptest.NewRequest("GET", "/get-announcements/?count=10&page=0", nil)
 	res := httptest.NewRecorder()
 
-	GetAllAnnouncement(&storage.Storage{Db: db})(res, req)
+	handler := GetAllAnnouncement(strg)
+	handler(res, req)
 
+	var newObj []storage.AnnouncementsResponse
+
+	if err := json.Unmarshal(res.Body.Bytes(), &newObj); err != nil {
+		t.Error(err)
+	}
+
+	assert.Equal(t, []storage.AnnouncementsResponse{
+		{
+			Name:    "name2",
+			Price:   120,
+			IdPhoto: "2",
+		},
+		{
+			Name:    "name1",
+			Price:   150,
+			IdPhoto: "1",
+		},
+	}, newObj)
 }
 
 func TestGetAnnouncementById(t *testing.T) {
@@ -54,8 +129,8 @@ func TestGetAnnouncementById(t *testing.T) {
 	req := httptest.NewRequest("GET", "/get-announcement/?id=12", nil)
 	res := httptest.NewRecorder()
 
-	GetAnnouncementById(&storage.Storage{Db: db})(res, req)
-
+	handler := GetAnnouncementById(&storage.Storage{Db: db})
+	handler(res, req)
 }
 
 func TestValidatePage(t *testing.T) {
