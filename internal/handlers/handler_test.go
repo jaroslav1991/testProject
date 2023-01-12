@@ -126,10 +126,12 @@ func TestGetAnnouncementById(t *testing.T) {
 		t.Error(err)
 	}
 
-	req := httptest.NewRequest("GET", "/get-announcement/?id=12", nil)
+	strg := storage.NewStorage(db)
+
+	req := httptest.NewRequest("GET", "/get-announcement/?id=160", nil)
 	res := httptest.NewRecorder()
 
-	handler := GetAnnouncementById(&storage.Storage{Db: db})
+	handler := GetAnnouncementById(strg)
 	handler(res, req)
 }
 
@@ -276,23 +278,3 @@ func TestValidatePrice(t *testing.T) {
 		})
 	}
 }
-
-//func TestGetAllAnnouncement1(t *testing.T) {
-//	type args struct {
-//		storage *Storage
-//	}
-//	tests := []struct {
-//		name string
-//		args args
-//		want http.HandlerFunc
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := GetAllAnnouncement(tt.args.storage); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("GetAllAnnouncement() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}

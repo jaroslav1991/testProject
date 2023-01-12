@@ -42,7 +42,6 @@ func CreateHandler(storageDB *storage.Storage) http.HandlerFunc {
 				return
 			}
 			w.Write(bodyRes)
-			//log.Println(announcement)
 		}
 
 	}
